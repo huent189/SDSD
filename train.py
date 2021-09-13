@@ -239,7 +239,8 @@ def main():
                     psnr_total_avg = 0.
                     for val_data in val_loader:
                         folder = val_data['folder'][0]
-                        idx_d = val_data['idx'].item()
+                        idx_d = val_data['idx'][0]
+                        # idx_d = idx_d.item()
                         # border = val_data['border'].item()
                         if psnr_rlt.get(folder, None) is None:
                             psnr_rlt[folder] = []

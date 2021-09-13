@@ -53,7 +53,8 @@ def read_img(env, path, size=None):
 
 def read_img2(env, path, size=None):
     if env is None:  # img
-        img = np.load(path)
+        # img = np.load(path)
+        img = cv2.imread(path)
         if img is None:
             print(path)
         if size is not None:
