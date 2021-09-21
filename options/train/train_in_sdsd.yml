@@ -4,7 +4,7 @@ use_tb_logger: true
 model: video_base
 distortion: sr
 scale: 1
-gpu_ids: [0]
+gpu_ids: [2]
 
 #### datasets
 datasets:
@@ -14,8 +14,8 @@ datasets:
     interval_list: [1]
     random_reverse: false
     border_mode: false
-    dataroot_GT: path_to_dataset/indoor_np/GT
-    dataroot_LQ: path_to_dataset/indoor_np/input
+    dataroot_GT: /home/ubuntu/dataset/indoor/GT
+    dataroot_LQ: /home/ubuntu/dataset/indoor/input
     train_size: [960, 512]
     cache_keys: ~
     cache_data: true
@@ -25,7 +25,7 @@ datasets:
 
     N_frames: 5     # how many frames as a input.
     use_shuffle: true
-    n_workers: 3  # per GPU
+    n_workers: 6  # per GPU
     batch_size: 32
     GT_size: 128     # size you want to crop out as input sample.
     LQ_size: 128
@@ -35,8 +35,8 @@ datasets:
   val:
     name: REDS4
     mode: video_samesize
-    dataroot_GT: path_to_dataset/indoor_np/GT
-    dataroot_LQ: path_to_dataset/indoor_np/input
+    dataroot_GT: /home/ubuntu/dataset/indoor_val/GT
+    dataroot_LQ: /home/ubuntu/dataset/indoor_val/input
     cache_data: true
     N_frames: 5
     padding: new_info
@@ -58,9 +58,9 @@ network_G:
 path:
   root: ./
   ## e.g., if you want to resume the training from iteration of 140000, you should write pretrain_model_G and resume_state like this.
-  ## pretrain_model_G: experiments/indoor-sdsd/models/140000_G.pth
+  pretrain_model_G: /home/ubuntu/code/SDSD/experiments/indoor-sdsd/models/155000_G.pth
   strict_load: false
-  ## resume_state: experiments/indoor-sdsd/training_state/140000.state
+  resume_state: /home/ubuntu/code/SDSD/experiments/indoor-sdsd/training_state/155000.state
 
 #### training settings: learning rate scheme, loss
 train:
@@ -69,6 +69,7 @@ train:
   beta1: 0.9
   beta2: 0.99
   niter: 600000
+  #niter: 300
   ft_tsa_only: 50000
   warmup_iter: -1  # -1: no warm up
   T_period: [50000, 100000, 150000, 150000, 150000]
@@ -79,7 +80,7 @@ train:
   pixel_criterion: cb
   pixel_weight: 1.0
   val_freq: !!float 5e3
-
+  #val_freq: !!float 1e1
   manual_seed: 2318
 
 #### logger

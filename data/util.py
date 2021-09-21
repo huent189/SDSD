@@ -19,7 +19,8 @@ def flip(x, dim):
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
-
+def glob_vid_list(root):
+    return sorted(glob.glob(os.path.join(root, 'pair*')) + glob.glob(os.path.join(root, 'indoor/*')) + glob.glob(os.path.join(root, 'outdoor/*')))
 def glob_file_list(root):
     return sorted(glob.glob(os.path.join(root, '*')))
 
@@ -55,8 +56,7 @@ def read_img2(env, path, size=None):
     if env is None:  # img
         # img = np.load(path)
         img = cv2.imread(path)
-        if img is None:
-            print(path)
+        assert img is not None, path
         if size is not None:
             img = cv2.resize(img, (size[0], size[1]))
     else:

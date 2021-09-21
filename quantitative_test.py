@@ -9,7 +9,7 @@ import options.options as option
 import utils.util as util
 from data import create_dataset, create_dataloader
 from models import create_model
-
+import piq
 #### options
 parser = argparse.ArgumentParser()
 parser.add_argument('-opt', type=str, required=True, help='Path to options YMAL file.')
@@ -51,13 +51,16 @@ def main():
             model.test()
 
             visuals = model.get_current_visuals()
+            assert (visuals['GT'].max() <= 1.0 and visuals['GT'].shape[0] == 3), visuals['GT'].max()
             rlt_img = util.tensor2img(visuals['rlt'])
             gt_img = util.tensor2img(visuals['GT'])
 
             psnr = util.calculate_psnr(rlt_img, gt_img)
+            # psnr = piq.psnr(visuals['rlt'].unsqueeze(0), visuals['GT'].unsqueeze(0))
             psnr_rlt[folder].append(psnr)
 
             ssim = util.calculate_ssim(rlt_img, gt_img)
+            # ssim = piq.ssim(visuals['rlt'].unsqueeze(0), visuals['GT'].unsqueeze(0))
             ssim_rlt[folder].append(ssim)
 
             pbar.update('Test {} - {}'.format(folder, idx_d))

@@ -98,7 +98,7 @@ def main():
 
     torch.backends.cudnn.benchmark = True
     # torch.backends.cudnn.deterministic = True
-
+    best_psnr = 0
     #### create train and val dataloader
     dataset_ratio = 200  # enlarge the size of each epoch
     for phase, dataset_opt in opt['datasets'].items():
@@ -208,6 +208,7 @@ def main():
                         ill_img = util.tensor2img(visuals['ill'])  # the predicted illumination map
                         save_img = np.concatenate([sou_img, rlt_img, ill_img, gt_img], axis=0)
                         im_path = os.path.join(opt['path']['val_images'], '%06d.png' % current_step)
+                        assert os.path.exists(opt['path']['val_images']), opt['path']['val_images']
                         cv2.imwrite(im_path, save_img.astype(np.uint8))
 
                         # calculate PSNR
@@ -267,6 +268,10 @@ def main():
                         tb_logger.add_scalar('psnr_avg', psnr_total_avg, current_step)
                         for k, v in psnr_rlt_avg.items():
                             tb_logger.add_scalar(k, v, current_step)
+                        if psnr_total_avg > best_psnr:
+                            logger.info('Saving best_model.')
+                            model.save(f'best_psnr_{current_step}')
+                            best_psnr = psnr_total_avg
 
             #### save models and training states
             if current_step % opt['logger']['save_checkpoint_freq'] == 0:
@@ -274,7 +279,7 @@ def main():
                     logger.info('Saving models and training states.')
                     model.save(current_step)
                     model.save_training_state(epoch, current_step)
-
+            
     if rank <= 0:
         logger.info('Saving the final model.')
         model.save('latest')

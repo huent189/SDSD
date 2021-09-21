@@ -35,8 +35,10 @@ class VideoSameSizeDataset(data.Dataset):
         # read data:
         subfolders_LQ = util.glob_file_list(self.LQ_root)
         subfolders_GT = util.glob_file_list(self.GT_root)
+        # print('LQ\n',subfolders_LQ)
+        # print('GT\n',subfolders_GT)
         for subfolder_LQ, subfolder_GT in zip(subfolders_LQ, subfolders_GT):
-            subfolder_name = osp.basename(subfolder_GT)
+            subfolder_name = subfolder_GT.replace(self.GT_root, '')
 
             if (subfolder_name in testing_dir):
                 continue
@@ -44,8 +46,8 @@ class VideoSameSizeDataset(data.Dataset):
             img_paths_LQ = util.glob_file_list(subfolder_LQ)
             img_paths_GT = util.glob_file_list(subfolder_GT)
 
-            max_idx = len(img_paths_LQ)
-            assert max_idx == len(img_paths_GT), 'Different number of images in LQ and GT folders'
+            max_idx = max(len(img_paths_LQ), len(img_paths_GT))
+            # assert max_idx == len(img_paths_GT), f'Different number of images in LQ and GT folders {subfolder_LQ}, {subfolder_GT}'
             self.data_info['path_LQ'].extend(img_paths_LQ)  # list of path str of images
             self.data_info['path_GT'].extend(img_paths_GT)
             self.data_info['folder'].extend([subfolder_name] * max_idx)
@@ -72,6 +74,8 @@ class VideoSameSizeDataset(data.Dataset):
                                            padding=self.opt['padding'])
         imgs_LQ_path = []
         for mm in range(len(select_idx)):
+            tmp = select_idx[mm]
+            assert select_idx[mm] < len (self.imgs_LQ[folder]), f'{len (self.imgs_LQ[folder])}, {tmp}'
             imgs_LQ_path.append(self.imgs_LQ[folder][select_idx[mm]])
         img_GT_path = self.imgs_GT[folder][idx:idx+1]
 
